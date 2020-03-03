@@ -5,52 +5,32 @@
 Disassembly of section .text:
 
 20000000 <startup>:
- *
- */
-__attribute__((naked)) __attribute__((section (".start_section")) )
-void startup ( void )
-{
-__asm__ volatile(" LDR R0,=0x2001C000\n");		/* set stack */
 20000000:	4802      	ldr	r0, [pc, #8]	; (2000000c <startup+0xc>)
-__asm__ volatile(" MOV SP,R0\n");
 20000002:	4685      	mov	sp, r0
-__asm__ volatile(" BL main\n");					/* call main */
 20000004:	f000 f87a 	bl	200000fc <main>
-__asm__ volatile(".L1: B .L1\n");				/* never return */
 20000008:	e7fe      	b.n	20000008 <startup+0x8>
-}
 2000000a:	46c0      	nop			; (mov r8, r8)
 2000000c:	2001c000 	andcs	ip, r1, r0
 
 20000010 <irq_handler>:
-    else
-        systick_flag = 1;
-}*/
-
-void irq_handler(void)
-{
 20000010:	b580      	push	{r7, lr}
 20000012:	af00      	add	r7, sp, #0
-    if( (*EXTI_PR & EXTI3_IRQ_BPOS) != 0 )
 20000014:	4b09      	ldr	r3, [pc, #36]	; (2000003c <irq_handler+0x2c>)
 20000016:	681b      	ldr	r3, [r3, #0]
 20000018:	2208      	movs	r2, #8
 2000001a:	4013      	ands	r3, r2
 2000001c:	d004      	beq.n	20000028 <irq_handler+0x18>
-        count++;
 2000001e:	4b08      	ldr	r3, [pc, #32]	; (20000040 <irq_handler+0x30>)
 20000020:	681b      	ldr	r3, [r3, #0]
 20000022:	1c5a      	adds	r2, r3, #1
 20000024:	4b06      	ldr	r3, [pc, #24]	; (20000040 <irq_handler+0x30>)
 20000026:	601a      	str	r2, [r3, #0]
-        *EXTI_PR |= EXTI3_IRQ_BPOS;
 20000028:	4b04      	ldr	r3, [pc, #16]	; (2000003c <irq_handler+0x2c>)
 2000002a:	681a      	ldr	r2, [r3, #0]
 2000002c:	4b03      	ldr	r3, [pc, #12]	; (2000003c <irq_handler+0x2c>)
 2000002e:	2108      	movs	r1, #8
 20000030:	430a      	orrs	r2, r1
 20000032:	601a      	str	r2, [r3, #0]
-}
 20000034:	46c0      	nop			; (mov r8, r8)
 20000036:	46bd      	mov	sp, r7
 20000038:	bd80      	pop	{r7, pc}
@@ -59,16 +39,11 @@ void irq_handler(void)
 20000040:	20000120 	andcs	r0, r0, r0, lsr #2
 
 20000044 <init_app>:
-
-void init_app()
-{
 20000044:	b580      	push	{r7, lr}
 20000046:	af00      	add	r7, sp, #0
-	*((unsigned long*) 0x40023830) = 0x18;
 20000048:	4b1f      	ldr	r3, [pc, #124]	; (200000c8 <init_app+0x84>)
 2000004a:	2218      	movs	r2, #24
 2000004c:	601a      	str	r2, [r3, #0]
-	*((unsigned long*) 0x40023844) |= 0x4000;
 2000004e:	4b1f      	ldr	r3, [pc, #124]	; (200000cc <init_app+0x88>)
 20000050:	681a      	ldr	r2, [r3, #0]
 20000052:	4b1e      	ldr	r3, [pc, #120]	; (200000cc <init_app+0x88>)
@@ -76,20 +51,12 @@ void init_app()
 20000056:	01c9      	lsls	r1, r1, #7
 20000058:	430a      	orrs	r2, r1
 2000005a:	601a      	str	r2, [r3, #0]
-	*((unsigned long*) 0xE000ED08) = 0x2001C000;
 2000005c:	4b1c      	ldr	r3, [pc, #112]	; (200000d0 <init_app+0x8c>)
 2000005e:	4a1d      	ldr	r2, [pc, #116]	; (200000d4 <init_app+0x90>)
 20000060:	601a      	str	r2, [r3, #0]
-    *((volatile unsigned int *) 0x40020C00) = 0x00005555; //Port-D alla utgångar (ska det vara så?)
 20000062:	4b1d      	ldr	r3, [pc, #116]	; (200000d8 <init_app+0x94>)
 20000064:	4a1d      	ldr	r2, [pc, #116]	; (200000dc <init_app+0x98>)
 20000066:	601a      	str	r2, [r3, #0]
-   // *((volatile unsigned int *) 0x40021000) = 0x0; //port E 
-     
-    
-    
-    //Config sys
-    *SYSCFG_EXTICR1 &= 0x0FFF; // Nollställ bitfältet 
 20000068:	4b1d      	ldr	r3, [pc, #116]	; (200000e0 <init_app+0x9c>)
 2000006a:	881b      	ldrh	r3, [r3, #0]
 2000006c:	b29b      	uxth	r3, r3
@@ -98,7 +65,6 @@ void init_app()
 20000072:	0d1b      	lsrs	r3, r3, #20
 20000074:	b29b      	uxth	r3, r3
 20000076:	8013      	strh	r3, [r2, #0]
-    *SYSCFG_EXTICR1 |= 0x4000; //Ställ in 0100 för PE
 20000078:	4b19      	ldr	r3, [pc, #100]	; (200000e0 <init_app+0x9c>)
 2000007a:	881b      	ldrh	r3, [r3, #0]
 2000007c:	b29b      	uxth	r3, r3
@@ -108,42 +74,27 @@ void init_app()
 20000084:	4313      	orrs	r3, r2
 20000086:	b29b      	uxth	r3, r3
 20000088:	800b      	strh	r3, [r1, #0]
-    
-    //config Exti
-    *EXTI_IMR |= 0x8; //Öppna exti3 för avbrott
 2000008a:	4b16      	ldr	r3, [pc, #88]	; (200000e4 <init_app+0xa0>)
 2000008c:	681a      	ldr	r2, [r3, #0]
 2000008e:	4b15      	ldr	r3, [pc, #84]	; (200000e4 <init_app+0xa0>)
 20000090:	2108      	movs	r1, #8
 20000092:	430a      	orrs	r2, r1
 20000094:	601a      	str	r2, [r3, #0]
-    *EXTI_RTSR |= 0x8; //positiv flank
 20000096:	4b14      	ldr	r3, [pc, #80]	; (200000e8 <init_app+0xa4>)
 20000098:	681a      	ldr	r2, [r3, #0]
 2000009a:	4b13      	ldr	r3, [pc, #76]	; (200000e8 <init_app+0xa4>)
 2000009c:	2108      	movs	r1, #8
 2000009e:	430a      	orrs	r2, r1
 200000a0:	601a      	str	r2, [r3, #0]
-    *EXTI_FTSR &= ~0x8;
 200000a2:	4b12      	ldr	r3, [pc, #72]	; (200000ec <init_app+0xa8>)
 200000a4:	681a      	ldr	r2, [r3, #0]
 200000a6:	4b11      	ldr	r3, [pc, #68]	; (200000ec <init_app+0xa8>)
 200000a8:	2108      	movs	r1, #8
 200000aa:	438a      	bics	r2, r1
 200000ac:	601a      	str	r2, [r3, #0]
-    
-
-
-    
-    *( (void (**) (void) ) (0x2001C064)) = irq_handler;
 200000ae:	4b10      	ldr	r3, [pc, #64]	; (200000f0 <init_app+0xac>)
 200000b0:	4a10      	ldr	r2, [pc, #64]	; (200000f4 <init_app+0xb0>)
 200000b2:	601a      	str	r2, [r3, #0]
-    
-        //config NVIC
-    //NVIC_ISER0 |= (1<<9);  //nvic
-    
-    *((unsigned int *) 0xe000e100) |= (1<<9);
 200000b4:	4b10      	ldr	r3, [pc, #64]	; (200000f8 <init_app+0xb4>)
 200000b6:	681a      	ldr	r2, [r3, #0]
 200000b8:	4b0f      	ldr	r3, [pc, #60]	; (200000f8 <init_app+0xb4>)
@@ -151,9 +102,6 @@ void init_app()
 200000bc:	0089      	lsls	r1, r1, #2
 200000be:	430a      	orrs	r2, r1
 200000c0:	601a      	str	r2, [r3, #0]
-
-    
-}
 200000c2:	46c0      	nop			; (mov r8, r8)
 200000c4:	46bd      	mov	sp, r7
 200000c6:	bd80      	pop	{r7, pc}
@@ -172,20 +120,12 @@ void init_app()
 200000f8:	e000e100 	and	lr, r0, r0, lsl #2
 
 200000fc <main>:
-
-void main(void)
-{
 200000fc:	b580      	push	{r7, lr}
 200000fe:	af00      	add	r7, sp, #0
-    init_app();
 20000100:	f7ff ffa0 	bl	20000044 <init_app>
-    *GPIO_ODR_LOW = 0x4;
 20000104:	4b04      	ldr	r3, [pc, #16]	; (20000118 <main+0x1c>)
 20000106:	2204      	movs	r2, #4
 20000108:	701a      	strb	r2, [r3, #0]
-    while(1)
-    {
-         *GPIO_ODR_LOW = count; //skriv count till utport
 2000010a:	4b04      	ldr	r3, [pc, #16]	; (2000011c <main+0x20>)
 2000010c:	681a      	ldr	r2, [r3, #0]
 2000010e:	4b02      	ldr	r3, [pc, #8]	; (20000118 <main+0x1c>)

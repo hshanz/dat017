@@ -3,6 +3,7 @@
  *
  */
 __attribute__((naked)) __attribute__((section (".start_section")) )
+__attribute__((naked)) __attribute__((section (".start_section")) )
 void startup ( void )
 {
 __asm__ volatile(" LDR R0,=0x2001C000\n");		/* set stack */

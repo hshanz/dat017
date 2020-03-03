@@ -98,6 +98,7 @@ void main(void)
 {
     init_app();
     *GPIO_ODR_LOW = 0x4;
+	void irq_handler;
     while(1)
     {
          *GPIO_ODR_LOW = count; //skriv count till utport

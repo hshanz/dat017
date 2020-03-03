@@ -102,7 +102,10 @@ void irq_handler_EXTI0(void){
 	*EXTI_PR |= EXTI0_IRQ_BPOS;
 	*PORT_E_OdrLow |= EXTI_RST0;
 	count++;
+	*PORT_E_OdrLow = 0x00010000;
 	*PORT_E_OdrLow &= 0;
+	
+	
 	
 	
 }
@@ -111,6 +114,7 @@ void irq_handler_EXTI1(void){
 	*EXTI_PR |= EXTI1_IRQ_BPOS;
 	*PORT_E_OdrLow  |= EXTI_RST1;
 	count = 0;
+	*PORT_E_OdrLow = 0x00010000;
 	*PORT_E_OdrLow &= 0;
 }
 
@@ -118,6 +122,7 @@ void irq_handler_EXTI2(void){
 	*EXTI_PR |= EXTI2_IRQ_BPOS;
 	*PORT_E_OdrLow  |= EXTI_RST2;
 	*PORT_D_OdrHigh = ~*PORT_D_OdrHigh;
+	*PORT_E_OdrLow = 0x00010000;
 	*PORT_E_OdrLow &= 0;
 }
 
