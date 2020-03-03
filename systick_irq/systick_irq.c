@@ -13,72 +13,83 @@ __asm volatile(
 	"_exit: B .\n"				/* never return */
 	) ;
 }
-#define PORT_D 0x40020C00
-#define PORT_D_Moder ((volatile unsigned int*) (PORT_D))
-#define PORT_D_Otyper ((volatile unsigned short *) (PORT_D+0x4))
-#define PORT_D_Ospeedr ((volatile unsigned int *) (PORT_D+0x8))
-#define PORT_D_Pupdr ((volatile unsigned int *) (PORT_D+0xC))
-#define PORT_D_IdrLow ((volatile unsigned short *) (PORT_D+0x10))
-#define PORT_D_IdrHigh ((volatile unsigned char *) (PORT_D+0x11))
-#define PORT_D_OdrLow ((volatile unsigned char *) (PORT_D+0x14))
-#define PORT_D_OdrHigh ((volatile unsigned char *) (PORT_D+0x14+1))
 
-#define STK 0xE000E010
-#define STK_CTRL ((volatile unsigned int*)(STK))
-#define STK_LOAD ((volatile unsigned int*)(STK + 0x4))
-#define STK_VAL ((volatile unsigned int*)(STK + 0x8))
-#define SIMULATOR
+#define STK_CTRL ((volatile unsigned int *)(0xE000E010))
+#define STK_LOAD ((volatile unsigned int *)(0xE000E014))
+#define STK_VAL ((volatile unsigned int *)(0xE000E018))
 
-#ifdef	SIMULATOR
-#define DELAY_COUNT 1000
-#else
-#define DELAY_COUNT 1000000
-#endif
+#define EXTI ((volatile unsigned int *) (0x40013C00))
 
+#define IRQ
+#define USBDM
+
+#define GPIO_D 0x40020C00
+#define GPIO_MODER ((volatile unsigned int *) (GPIO_D))
+#define GPIO_OTYPER ((volatile unsigned short *) (GPIO_D+0x4))
+#define GPIO_PUPDR ((volatile unsigned int *) (GPIO_D+0xC))
+#define GPIO_IDR_LOW ((volatile unsigned char *) (GPIO_D+0x10))
+#define GPIO_IDR_HIGH ((volatile unsigned char *) (GPIO_D+0x11))
+#define GPIO_ODR_LOW ((volatile unsigned char *) (GPIO_D+0x14))
+#define GPIO_ODR_HIGH ((volatile unsigned char *) (GPIO_D+0x15)) 
+
+#define DELAY_COUNT 100000
 static volatile int systick_flag;
 static volatile int delay_count;
-static volatile int fisk;
-void systick_irq_handler(void);
 
-void init_app(void){
-	*PORT_D_Moder = 0x55555555;
-	*((void(**)(void))0x2001C03C) = systick_irq_handler;
-}
-void delay_1mikro(void){
-	*STK_CTRL = 0;
-	*STK_LOAD = (168 -1);
-	*STK_VAL = 0;
-	*STK_CTRL = 7;
-}
-void systick_irq_handler(void){
-	*STK_CTRL = 0;
-	delay_count --;
-	if(delay_count > 0){
-		delay_1mikro();
-	}
-	else systick_flag = 1;
-}
-void delay(unsigned int count){
-	if(	count == 0){
-		return;
-	}
-	delay_count = count;
+void delay_1mikro( void )
+{
 	systick_flag = 0;
-	delay_1mikro();
+    *STK_CTRL = 0;
+    *STK_LOAD = ( 168 -1 );
+    *STK_VAL = 0;
+    *STK_CTRL = 7;
 }
 
-void main(void){
-	init_app();
-	*PORT_D_OdrLow = 0;
-	delay(DELAY_COUNT);
-	*PORT_D_OdrLow = 0xFF;
-	while(1){
-		if(systick_flag){
-			break;
-		}
-		
-		fisk++;
-	}
-	*PORT_D_OdrLow = 0;
+void systick_irq_handler( void )
+{
+    *STK_CTRL = 0;
+    delay_count -- ;
+    if( delay_count > 0 )
+        delay_1mikro();
+    else
+        systick_flag = 1;
 }
 
+
+void delay( unsigned int count )
+{
+    if( count == 0)
+        return;
+    delay_count = count;
+    systick_flag = 0;
+    delay_1mikro();
+}
+
+void init_app()
+{
+	#ifdef USBDM
+	((unsigned long) 0x40023830) = 0x18;
+	((unsigned long) 0x40023844) |= 0x4000;
+	((unsigned long) 0xE000ED08) = 0x2001C000;
+	#endif
+	
+	
+	
+    *((volatile unsigned int *) 0x40020C00) = 0x55555555; 
+    ((void (*)(void) ) 0x2001C03C ) = systick_irq_handler; 
+    
+}
+
+void main(void)
+{
+    init_app();
+    *GPIO_ODR_LOW = 0;
+    delay( DELAY_COUNT );
+    *GPIO_ODR_LOW = 0xFF;
+    while(1)
+    {   
+    if( systick_flag )
+        break;
+    }
+    *GPIO_ODR_LOW = 0;
+}
