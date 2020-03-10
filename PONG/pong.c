@@ -60,7 +60,7 @@ typedef volatile GPIO* gpioptr;
 #define LCD_HEIGHT 64 //LC skärmens höjd
 #define MAX_POINTS 14 //max antal punkter som en Geometry får ha.
 
-#define SIMULATOR //Om man kör i labbsystemet kommentera ut hela raden.
+//#define SIMULATOR //Om man kör i labbsystemet kommentera ut hela raden.
 #define WinPoints 9 //Poängen man ska få för att vinna.
 
 
@@ -385,14 +385,16 @@ void check_ball_collision(POBJECT O){ //Check if the ball hits anything.
 		O->diry = -(O->diry);
 	}
 	//If the ball hits player1's paddle, change direction.
-	else if(O->posx <= Player1.objct->posx + 6 && Player1.objct->posy -2 <= O->posy && O->posy <= Player1.objct->posy + Player1.objct->geo->sizeY +1 && O->posx > Player1.objct->posx - 4 ){
+	else if(O->posx < Player1.objct->posx + O->geo->sizeX && Player1.objct->posy -2 <= O->posy && O->posy <= Player1.objct->posy + Player1.objct->geo->sizeY +1 && O->posx > Player1.objct->posx - 4 ){
 		O->dirx = -(O->dirx);
 		O->set_pos(O, Player1.objct->posx + 5, O->posy);
+		Player1.objct->draw(Player1.objct);
 	}
 	//If the ball hits player1's paddle, change direction.
-	else if(O->posx >= Player2.objct->posx - 6 && Player2.objct->posy -2 <= O->posy && O->posy <= Player2.objct->posy + Player2.objct->geo->sizeY +1 && O->posx < Player2.objct->posx + 4 ){
+	else if(O->posx > Player2.objct->posx - O->geo->sizeX && Player2.objct->posy -2 <= O->posy && O->posy <= Player2.objct->posy + Player2.objct->geo->sizeY +1 && O->posx < Player2.objct->posx + 4 ){
 		O->dirx = -(O->dirx);
 		O->set_pos(O, Player2.objct->posx - 5, O->posy);
+		Player2.objct->draw(Player2.objct);
 	}
 }
 void set_object_speed(POBJECT O, int speedx, int speedy){
@@ -497,12 +499,12 @@ int ReadColumn (void){
 	if(c & 0x1) return 1;
 	return 0;
 }
-void out7seg(unsigned char c){
-	if (c > 0xF){
-		GPIO_D.odr_low = 0x00;
-	}
-	else GPIO_D.odr_low = Segcodes[c];
-	}
+//void out7seg(unsigned char c){
+//	if (c > 0xF){
+//		GPIO_D.odr_low = 0x00;
+//	}
+//	else GPIO_D.odr_low = Segcodes[c];
+//	}
 
 //ascii Funktioner
 void ascii_init(void){
@@ -598,17 +600,10 @@ void print_to_ascii(char line[], signed char x, char i){
 }
 
 //Sets values to their initiall value.
-void init_app(void){ 
-	//#ifdef USBDM
-	//	*((unsigned long*)0x40023830) = 0x18;
-	//	__asm volatile( "LDR R0, =0x8000209\n BLX R0\n");
-	//#endif
-	
+void init_app(void){ 	
 	
 	GPIO_E.moder = 0x55555555;
 	GPIO_D.moder = 0x55005555;
-	GPIO_D.otyper = 0x0F00;
-	GPIO_D.pupdr = 0xAAAA0000;
 }	
 void game_init(POBJECT BALL, PPLAYER P1, PPLAYER P2){
 		//Reset points
@@ -632,7 +627,7 @@ void game_init(POBJECT BALL, PPLAYER P1, PPLAYER P2){
 		P2->objct->move(P2->objct); //Flyttar P2 "pinne"
 		
 		// Gives the ball it's speedfactor.
-		BALL->set_speed(BALL,2,1);
+		BALL->set_speed(BALL,1,1);
 		delay_milli(300);
 }
 
@@ -650,7 +645,6 @@ void main(void){
 		BALL->move(BALL); //sätter bollen i rörelse
 		delay_milli(10);
 		c = keyb(); //Kollar om någon tryckt
-		GPIO_D.odr_low = c;
 		switch(c){
 			case 1: P1->objct->set_speed(P1->objct, 0, -2);
 				P1->objct->move(P1->objct);
@@ -664,7 +658,6 @@ void main(void){
 			case 9: P2->objct->set_speed(P2->objct, 0, 2);
 				P2->objct->move(P2->objct);
 				break;
-
 		}
 		if(P1->points >= WinPoints||P2->points >= WinPoints){ //Om någon har nåt poängen för att vinna
 			char press[] = "Press 5 to restart";

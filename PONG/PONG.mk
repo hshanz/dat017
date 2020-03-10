@@ -5,15 +5,15 @@
 ## Debug
 ProjectName            :=PONG
 ConfigurationName      :=Debug
-WorkspacePath          :=C:/Users/David/Documents/Chalmers/MOP/moplabb
-ProjectPath            :="C:/Users/David/Downloads/Dat017-master (1)/Dat017-master/PONG"
+WorkspacePath          :=C:/Users/daandre/Documents/moplabb
+ProjectPath            :="C:/Users/daandre/Downloads/dat017-master (4)/dat017-master/PONG"
 IntermediateDirectory  :=./Debug
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
-User                   :=David
-Date                   :=09/03/2020
+User                   :=daandre
+Date                   :=10/03/2020
 CodeLitePath           :=C:/cseapp/CodeLite
 LinkerName             :=$(CodeLiteDir)/tools/gcc-arm/bin/arm-none-eabi-g++.exe
 SharedObjectLinkerName :=$(CodeLiteDir)/tools/gcc-arm/arm-none-eabi-g++.exe -shared -fPIC
@@ -104,7 +104,7 @@ PreBuild:
 ## Objects
 ##
 $(IntermediateDirectory)/pong.c$(ObjectSuffix): pong.c $(IntermediateDirectory)/pong.c$(DependSuffix)
-	$(CC) $(SourceSwitch) "C:/Users/David/Downloads/Dat017-master (1)/Dat017-master/PONG/pong.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/pong.c$(ObjectSuffix) $(IncludePath)
+	$(CC) $(SourceSwitch) "C:/Users/daandre/Downloads/dat017-master (4)/dat017-master/PONG/pong.c" $(CFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/pong.c$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/pong.c$(DependSuffix): pong.c
 	@$(CC) $(CFLAGS) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/pong.c$(ObjectSuffix) -MF$(IntermediateDirectory)/pong.c$(DependSuffix) -MM pong.c
 
